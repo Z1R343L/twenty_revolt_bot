@@ -1,0 +1,3 @@
+git+https://github.com/Darkflame72/defectio
+uvloop
+dill
