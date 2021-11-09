@@ -28,8 +28,12 @@ async def message_hook(message, ID: str, bot) -> None:
     data = await fetch_endpoint(url=f"{baseurl}set?", param={"id": ID, "prefix": "message", "data": urlsafe_b64encode(new_data)})
     old_data = pickle.loads(urlsafe_b64decode(s=data['old_data']))
     await bot.http.delete_message(channel_id=old_data['channel_id'], message_id=old_data['message_id'])
-
-
+    
+async def process_move(ctx, direction: str) -> None:
+    await ctx.message.delete()
+    data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "left"})
+    message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
+    await message_hook(message=message, ID=ctx.author.id, bot=bot)
 
 @bot.command()
 async def play(ctx):
@@ -40,39 +44,18 @@ async def play(ctx):
 
 @bot.command(aliases=["l"])
 async def left(ctx):
-    await ctx.message.delete()
-    data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "left"})
-    message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
-    await message_hook(message=message, ID=ctx.author.id, bot=bot)
-
-
+    await process_move(ctx, direction='left')
 
 @bot.command(aliases=["r"])
 async def right(ctx):
-    await ctx.message.delete()
-    data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "right"})
-    message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
-    await message_hook(message=message, ID=ctx.author.id, bot=bot)
-
-
+    await process_move(ctx, direction='right')
 
 @bot.command(aliases=["u"])
 async def up(ctx):
-    await ctx.message.delete()
-    data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "up"})
-    message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
-    await message_hook(message=message, ID=ctx.author.id, bot=bot)
-
-
-
+    await process_move(ctx, direction='up')
 
 @bot.command(aliases=["d"])
 async def down(ctx):
-    await ctx.message.delete()
-    data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "down"})
-    message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
-    await message_hook(message=message, ID=ctx.author.id, bot=bot)
-
-
+    await process_move(ctx, direction='down')
 
 bot.run(getenv("TOKEN"))
