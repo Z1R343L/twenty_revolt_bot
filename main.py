@@ -43,7 +43,7 @@ async def left(ctx):
     await ctx.message.delete()
     data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "left"})
     message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
-    await message_hook(message=message, id=ctx.author.id, bot=bot)
+    await message_hook(message=message, ID=ctx.author.id, bot=bot)
 
 
 
