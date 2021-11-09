@@ -17,18 +17,17 @@ baseurl = "http://twenty_api:8000/twenty/"
 bot = commands.Bot(command_prefix="_")
 
 
-async def fetch_endpoint(url: str, param: dict = {}) -> dict:
+async def fetch_endpoint(url: str, param: dict = None) -> dict:
     param['agent'] = 'revolt'
     async with ClientSession() as session:
         async with session.get(url + urlencode(param)) as response:
             return await response.json()
-        
-async def message_hook(message, id: str, bot) -> None:
+
+async def message_hook(message, ID: str, bot) -> None:
     new_data = pickle.dumps({"channel_id": message.channel.id, "message_id": message.id})
-    data = await fetch_endpoint(url=f"{baseurl}set?", param={"id": id, "prefix": "message", "data": urlsafe_b64encode(new_data)})
+    data = await fetch_endpoint(url=f"{baseurl}set?", param={"id": ID, "prefix": "message", "data": urlsafe_b64encode(new_data)})
     old_data = pickle.loads(urlsafe_b64decode(s=data['old_data']))
     await bot.http.delete_message(channel_id=old_data['channel_id'], message_id=old_data['message_id'])
-        
 
 
 
