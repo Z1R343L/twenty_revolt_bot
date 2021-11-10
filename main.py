@@ -25,20 +25,20 @@ async def fetch_endpoint(url: str, param: dict = None) -> dict:
 
 async def message_hook(message, ID: str, bot) -> None:
     new_data = pickle.dumps({"channel_id": message.channel.id, "message_id": message.id})
-    data = await fetch_endpoint(url=f"{baseurl}set?", param={"id": ID, "prefix": "message", "data": urlsafe_b64encode(new_data)})
+    data = await fetch_endpoint(url=f"{baseurl}set?", param={"ID": ID, "prefix": "message", "data": urlsafe_b64encode(new_data)})
     old_data = pickle.loads(urlsafe_b64decode(s=data['old_data']))
     await bot.http.delete_message(channel_id=old_data['channel_id'], message_id=old_data['message_id'])
 
 async def process_move(ctx, direction: str) -> None:
     await ctx.message.delete()
-    data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "left"})
+    data = await fetch_endpoint(url=f"{baseurl}move?", param={"ID": ctx.author.id, "action": "left"})
     message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
     await message_hook(message=message, ID=ctx.author.id, bot=bot)
 
 @bot.command()
 async def play(ctx):
     await ctx.message.delete()
-    data = await fetch_endpoint(url=f"{baseurl}new_game?", param={"id": ctx.author.id, "name": ctx.author.name})
+    data = await fetch_endpoint(url=f"{baseurl}new_game?", param={"ID": ctx.author.id, "name": ctx.author.name})
     message = await ctx.send(f"score: {data['score']}", file=defectio.File(data['image_path']))
     await message_hook(message=message, ID=ctx.author.id, bot=bot)
 
