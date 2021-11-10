@@ -28,7 +28,7 @@ async def message_hook(message, ID: str, bot) -> None:
     data = await fetch_endpoint(url=f"{baseurl}set?", param={"id": ID, "prefix": "message", "data": urlsafe_b64encode(new_data)})
     old_data = pickle.loads(urlsafe_b64decode(s=data['old_data']))
     await bot.http.delete_message(channel_id=old_data['channel_id'], message_id=old_data['message_id'])
-    
+
 async def process_move(ctx, direction: str) -> None:
     await ctx.message.delete()
     data = await fetch_endpoint(url=f"{baseurl}move?", param={"id": ctx.author.id, "action": "left"})
