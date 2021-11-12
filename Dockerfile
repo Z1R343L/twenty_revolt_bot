@@ -1,4 +1,5 @@
 FROM python:bullseye
 COPY . .
-RUN pip install -q -r requirements.txt > /dev/null 2>&1
+RUN pip install -U setuptools wheel -vv
+RUN pip install -r requirements.txt
 CMD ["python3", "-u", "main.py"]

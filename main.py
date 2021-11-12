@@ -7,7 +7,7 @@ import uvloop
 from aiohttp import ClientSession
 import defectio
 from defectio.ext import commands
-import dill as pickle
+import srsly
 
 uvloop.install()
 logging.basicConfig(level=logging.DEBUG)
@@ -24,9 +24,9 @@ async def fetch_endpoint(url: str, param: dict = None) -> dict:
             return await response.json()
 
 async def message_hook(message, ID: str, bot) -> None:
-    new_data = pickle.dumps({"channel_id": message.channel.id, "message_id": message.id})
+    new_data = srsly.msgpack_dumps({"channel_id": message.channel.id, "message_id": message.id}, protocol=-1)
     data = await fetch_endpoint(url=f"{baseurl}set?", param={"ID": ID, "prefix": "message", "data": urlsafe_b64encode(new_data)})
-    old_data = pickle.loads(urlsafe_b64decode(s=data['old_data']))
+    old_data = srsly.msgpack_loads(urlsafe_b64decode(s=data['old_data']))
     await bot.http.delete_message(channel_id=old_data['channel_id'], message_id=old_data['message_id'])
 
 async def process_move(ctx, direction: str) -> None:
